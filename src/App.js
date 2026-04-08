@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
+import { Badge, Button, Card, Accordion } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 const FESTIVAL_DATE = new Date("2026-07-24T18:00:00");
@@ -18,6 +21,48 @@ const ARTISTS = [
   { id: 12, name: "Lil Durk", stage: "Rage Stage", day: "Sunday", genre: "Drill" },
 ];
 
+const TICKET_TIERS = [
+  {
+    id: 1,
+    name: "General Admission",
+    price: "$299",
+    tag: "GA",
+    perks: [
+      "3-day festival access",
+      "Access to all 3 stages",
+      "Free water stations",
+      "General parking available",
+    ],
+  },
+  {
+    id: 2,
+    name: "VIP",
+    price: "$599",
+    tag: "VIP",
+    featured: true,
+    perks: [
+      "Everything in GA",
+      "Dedicated VIP entrance",
+      "VIP viewing areas",
+      "Exclusive VIP lounge access",
+      "Complimentary drinks",
+    ],
+  },
+  {
+    id: 3,
+    name: "Platinum",
+    price: "$1,199",
+    tag: "Platinum",
+    perks: [
+      "Everything in VIP",
+      "Front-of-stage access",
+      "Meet & greet opportunities",
+      "Premium parking pass",
+      "Exclusive merch package",
+    ],
+  },
+];
+
 function useCountdown() {
   const [now, setNow] = useState(new Date());
   useState(() => {
@@ -34,21 +79,17 @@ function useCountdown() {
   };
 }
 
-function Navbar({ active, setActive }) {
-  const links = ["Home", "Lineup", "Venue"];
+function Navbar() {
   return (
     <nav className="navbar">
-      <div className="nav-logo">ROLLING<span>LOUD</span></div>
+      <NavLink to="/" className="nav-logo" style={{ textDecoration: "none" }}>
+        ROLLING<span>LOUD</span>
+      </NavLink>
       <div className="nav-links">
-        {links.map((l) => (
-          <button
-            key={l}
-            className={`nav-link ${active === l ? "active" : ""}`}
-            onClick={() => setActive(l)}
-          >
-            {l}
-          </button>
-        ))}
+        <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Home</NavLink>
+        <NavLink to="/lineup" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Lineup</NavLink>
+        <NavLink to="/tickets" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Tickets</NavLink>
+        <NavLink to="/venue" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Venue</NavLink>
       </div>
     </nav>
   );
@@ -88,12 +129,7 @@ function HomePage() {
           <CountdownUnit value={seconds} label="Sec" />
         </div>
         <div className="hero-actions">
-          <a
-            className="btn-primary"
-            href="https://www.rollingloud.com/miami"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a className="btn-primary" href="https://www.rollingloud.com/miami" target="_blank" rel="noreferrer">
             Get Tickets
           </a>
         </div>
@@ -153,13 +189,15 @@ function LineupPage({ bookmarks, setBookmarks }) {
 
       <div className="day-filters">
         {days.map((d) => (
-          <button
+          <Button
             key={d}
-            className={`filter-btn ${dayFilter === d ? "active" : ""}`}
+            size="sm"
+            variant={dayFilter === d ? "danger" : "outline-secondary"}
+            className="filter-btn"
             onClick={() => setDayFilter(d)}
           >
             {d}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -174,7 +212,7 @@ function LineupPage({ bookmarks, setBookmarks }) {
               <div className="artist-info">
                 <h3 className="artist-name">{artist.name}</h3>
                 <span className="artist-meta">{artist.stage} · {artist.day}</span>
-                <span className="artist-genre">{artist.genre}</span>
+                <Badge bg="secondary" className="artist-genre">{artist.genre}</Badge>
               </div>
               <button
                 className={`bookmark-btn ${saved ? "saved" : ""}`}
@@ -186,6 +224,79 @@ function LineupPage({ bookmarks, setBookmarks }) {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function TicketsPage() {
+  return (
+    <div className="tickets-page">
+      <div className="section-header">
+        <h2>Tickets</h2>
+        <p>Rolling Loud Miami 2026 · July 24–26</p>
+      </div>
+
+      <div className="ticket-grid">
+        {TICKET_TIERS.map((tier) => (
+          <Card key={tier.id} className={`ticket-card ${tier.featured ? "ticket-featured" : ""}`}>
+            <Card.Body>
+              {tier.featured && (
+                <Badge bg="danger" className="featured-badge">Most Popular</Badge>
+              )}
+              <div className="ticket-tag">{tier.tag}</div>
+              <Card.Title className="ticket-name">{tier.name}</Card.Title>
+              <div className="ticket-price">{tier.price}</div>
+              <p className="ticket-per">per person · 3-day pass</p>
+              <ul className="ticket-perks">
+                {tier.perks.map((perk, i) => (
+                  <li key={i}>✓ {perk}</li>
+                ))}
+              </ul>
+              <a
+                href="https://www.rollingloud.com/miami"
+                target="_blank"
+                rel="noreferrer"
+                className={`ticket-btn ${tier.featured ? "ticket-btn-featured" : ""}`}
+              >
+                Buy {tier.tag}
+              </a>
+            </Card.Body>
+          </Card>
+        ))}
+      </div>
+
+      <div className="faq-section">
+        <div className="section-header" style={{ borderBottom: "none", paddingBottom: 0 }}>
+          <h2>FAQ</h2>
+          <p>Common questions about tickets</p>
+        </div>
+        <Accordion className="faq-accordion">
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>Are tickets refundable?</Accordion.Header>
+            <Accordion.Body>
+              All ticket sales are final. However, tickets can be transferred to another person through the official Rolling Loud app.
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="1">
+            <Accordion.Header>Is there a payment plan available?</Accordion.Header>
+            <Accordion.Body>
+              Yes! Payment plans are available for all ticket tiers. You can split your purchase into monthly installments at checkout.
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>What's the minimum age to attend?</Accordion.Header>
+            <Accordion.Body>
+              Rolling Loud Miami 2026 is an 18+ event. Valid government-issued ID is required at entry.
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="3">
+            <Accordion.Header>When will tickets be delivered?</Accordion.Header>
+            <Accordion.Body>
+              Tickets are delivered digitally via the Rolling Loud app. You'll receive your QR code at least 48 hours before the event.
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
       </div>
     </div>
   );
@@ -210,31 +321,19 @@ function VenuePage() {
       <div className="travel-grid">
         <div className="travel-card">
           <h4>✈ Flying In</h4>
-          <p>
-            Miami International Airport (MIA) is 8 miles from the venue. Fort Lauderdale–Hollywood
-            International (FLL) is 25 miles north. Both airports have direct rideshare and shuttle access.
-          </p>
+          <p>Miami International Airport (MIA) is 8 miles from the venue. Fort Lauderdale–Hollywood International (FLL) is 25 miles north. Both airports have direct rideshare and shuttle access.</p>
         </div>
         <div className="travel-card">
           <h4>🚗 Driving</h4>
-          <p>
-            Take I-95 or Florida's Turnpike to exit 2B (NW 199th St). Paid parking is available
-            on-site. Arrive early — lots fill up fast. Carpooling strongly encouraged.
-          </p>
+          <p>Take I-95 or Florida's Turnpike to exit 2B (NW 199th St). Paid parking is available on-site. Arrive early — lots fill up fast. Carpooling strongly encouraged.</p>
         </div>
         <div className="travel-card">
           <h4>🚌 Shuttle</h4>
-          <p>
-            Official Rolling Loud shuttles run from Downtown Miami, Brickell, and Aventura.
-            Shuttle passes can be added when purchasing your festival ticket.
-          </p>
+          <p>Official Rolling Loud shuttles run from Downtown Miami, Brickell, and Aventura. Shuttle passes can be added when purchasing your festival ticket.</p>
         </div>
         <div className="travel-card">
           <h4>🏨 Hotels</h4>
-          <p>
-            Partner hotels include the Miami Marriott Biscayne Bay and the InterContinental Miami.
-            Use code <strong>RL2026</strong> for a 15% festival discount.
-          </p>
+          <p>Partner hotels include the Miami Marriott Biscayne Bay and the InterContinental Miami. Use code <strong>RL2026</strong> for a 15% festival discount.</p>
         </div>
       </div>
 
@@ -253,22 +352,24 @@ function VenuePage() {
 }
 
 export default function App() {
-  const [active, setActive] = useState("Home");
   const [bookmarks, setBookmarks] = useState([]);
 
   return (
-    <div className="app">
-      <Navbar active={active} setActive={setActive} />
-      <main className="main">
-        {active === "Home" && <HomePage />}
-        {active === "Lineup" && (
-          <LineupPage bookmarks={bookmarks} setBookmarks={setBookmarks} />
-        )}
-        {active === "Venue" && <VenuePage />}
-      </main>
-      <footer className="footer">
-      <p>© 2026 Rolling Loud · All Rights Reserved</p>
-      </footer>
-    </div>
+    <BrowserRouter basename="/p13">
+      <div className="app">
+        <Navbar />
+        <main className="main">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/lineup" element={<LineupPage bookmarks={bookmarks} setBookmarks={setBookmarks} />} />
+            <Route path="/tickets" element={<TicketsPage />} />
+            <Route path="/venue" element={<VenuePage />} />
+          </Routes>
+        </main>
+        <footer className="footer">
+          <p>© 2026 Rolling Loud · All Rights Reserved</p>
+        </footer>
+      </div>
+    </BrowserRouter>
   );
 }
