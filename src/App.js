@@ -314,7 +314,7 @@ function LineupPage({ bookmarks, setBookmarks }) {
             <Button
               key={f}
               size="sm"
-              variant={dayFilter === f ? (f === "Favorites" ? "warning" : "danger") : "outline-secondary"}
+              variant={dayFilter === f ? (f === "Favorites" ? "warning" : "danger") : "outline-light"}
               className="filter-btn"
               onClick={() => setDayFilter(f)}
             >
@@ -367,7 +367,7 @@ function SchedulePage() {
           <Button
             key={d}
             size="sm"
-            variant={activeDay === d ? "danger" : "outline-secondary"}
+            variant={activeDay === d ? "danger" : "outline-light"}
             className="filter-btn"
             onClick={() => setActiveDay(d)}
             aria-pressed={activeDay === d}

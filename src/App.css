@@ -752,3 +752,15 @@ body {
   font-family: var(--font-body);
   font-weight: 600;
 }
+
+
+.btn-danger.filter-btn {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+.btn-warning.filter-btn {
+  background-color: var(--gold) !important;
+  border-color: var(--gold) !important;
+  color: #000 !important;
+}
